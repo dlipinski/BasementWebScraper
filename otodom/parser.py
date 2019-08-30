@@ -27,7 +27,7 @@ def parse_time(time_created, time_dirty):
 def parse_location(location_raw):
     location = location_raw.split(', ')
     if any(p in location[0] for p in ['ul.', 'al.', 'os.', 'pl.']):
-        return { 'city': location[1], 'district': 'district', 'street': location[0] }
+        return { 'city': location[1] if len(location) == 2 else '', 'district': '', 'street': location[0] }
     else:
         return { 'city': location[0], 'district': location[1], 'street': location[2] if len(location) == 3 else '' }
 
@@ -59,7 +59,7 @@ def parse_details(details_raw):
     details = {}
     for key in details_dict:
         phrase = details_dict[key] + ':'
-        detail_raw = [re.sub(phrase, '', d) for d in details_raw if phrase in d]
+        detail_raw = [re.sub(phrase, '', d) for d in details_raw_a if phrase in d]
         details[key] = detail_raw[0].strip() if len(detail_raw) > 0 else ''
     return details
 
@@ -94,9 +94,9 @@ def write_row(file, data):
     file.write(row)
 
 def parse():
-    input = open('scraped_old.csv', 'r')
+    input = open('scraped_all_280819.csv', 'r')
     output = open('parsed.csv', 'w+')
-    output.write('created;updated;city;district;street;private;price;deposit;rent;rooms;floor;surface;year;heating;windows;state;building;material;additional_info')
+    output.write('created;updated;city;district;street;private;price;deposit;rent;rooms;floor;surface;year;heating;windows;state;building;material;additional_info\n')
     for row in input:
         data = parse_row(row)
         write_row(output, data)
